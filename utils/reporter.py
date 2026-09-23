@@ -77,7 +77,7 @@ class Reporter:
                 else:
                     rows.append({"target": target, "target_type": target_type, "section": section, "value": value})
 
-        fieldnames = sorted({key for row in rows for key in row.keys()} or {"target", "target_type", "section", "value"})
+        fieldnames = sorted({key for row in rows for key in row.keys()}) if rows else ["target", "target_type", "section", "value"]
         with path.open("w", newline="", encoding="utf-8") as handle:
             writer = csv.DictWriter(handle, fieldnames=fieldnames)
             writer.writeheader()

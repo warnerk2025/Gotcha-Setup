@@ -212,8 +212,8 @@ def main():
         args.domain = True
 
     non_adult_scan_selected = any([args.social, args.general, args.developer, args.forums, args.gaming, args.breaches, args.professional, args.domain])
-    if args.adult and not args.username and not non_adult_scan_selected:
-        parser.error("--adult by itself requires a username target or another compatible scan module")
+    if args.adult and not args.username and not args.social:
+        parser.error("--adult requires a username target or --social so adult platform checks have an effect")
     if not non_adult_scan_selected and not (args.adult and args.username):
         parser.error("At least one scan option must be specified (or use --all)")
 
@@ -227,6 +227,9 @@ def main():
         sys.exit(1)
     except KeyboardInterrupt:
         print("\n[!] Scan interrupted by user")
+        sys.exit(1)
+    except Exception as exc:
+        print(f"Error: {exc}", file=sys.stderr)
         sys.exit(1)
 
 

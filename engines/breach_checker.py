@@ -1,6 +1,7 @@
 """Public breach lookup helpers."""
 
 import os
+from urllib.parse import quote
 
 import aiohttp
 
@@ -44,7 +45,8 @@ class BreachChecker:
             "hibp-api-key": api_key,
             "user-agent": self.config.user_agent,
         }
-        url = f"https://haveibeenpwned.com/api/v3/breachedaccount/{email}"
+        encoded_email = quote(email, safe="")
+        url = f"https://haveibeenpwned.com/api/v3/breachedaccount/{encoded_email}"
         try:
             async with session.get(url, headers=headers, params={"truncateResponse": "false"}) as response:
                 if response.status == 404:
@@ -67,7 +69,8 @@ class BreachChecker:
             return [{"source": "Have I Been Pwned", "status": "error", "details": str(exc)}]
 
     async def _check_xposedornot(self, session, email):
-        url = f"https://api.xposedornot.com/v1/check-email/{email}"
+        encoded_email = quote(email, safe="")
+        url = f"https://api.xposedornot.com/v1/check-email/{encoded_email}"
         try:
             async with session.get(url) as response:
                 if response.status == 404:
