@@ -5,7 +5,7 @@ Gotcha-Setup is a ready-to-run Python OSINT utility for username and email recon
 ## Features
 
 - Broad username reconnaissance across social, developer, gaming, forum, general, and adult platform definitions
-- Email reconnaissance with domain analysis and public breach lookups
+- Email reconnaissance with local-part platform scanning, domain analysis, and public breach lookups
 - Async concurrent scanning with configurable `--threads` and `--timeout`
 - Batch processing from a newline-delimited input file
 - JSON, CSV, and TXT report generation
@@ -57,7 +57,8 @@ python3 main.py -u sample_user --social --adult
 
 ```bash
 python3 main.py -e user@example.com --breaches --domain
-python3 main.py -e user@example.com --social --professional --domain
+python3 main.py -e user@example.com --social --general --developer --forums --gaming --professional --domain
+python3 main.py -e user@example.com --all
 ```
 
 ### Batch processing
@@ -73,16 +74,16 @@ python3 main.py -f targets.txt --breaches --domain -o reports/results.txt --form
 - `-u, --username`: single username target
 - `-e, --email`: single email target
 - `-f, --file`: newline-delimited file of usernames and/or emails
-- `--social`: social media checks
-- `--general`: general web profile checks
-- `--developer`: developer platform checks
-- `--forums`: forum/community checks
-- `--gaming`: gaming profile checks
+- `--social`: social media checks (also tries the email local-part against social profiles)
+- `--general`: general web profile checks (also tries the email local-part)
+- `--developer`: developer platform checks (also tries the email local-part)
+- `--forums`: forum/community checks (also tries the email local-part)
+- `--gaming`: gaming profile checks (also tries the email local-part)
 - `--breaches`: public breach lookup
 - `--professional`: professional-network profile lookup based on the email local-part
 - `--domain`: MX/NS/TXT/SPF/DMARC analysis for email domains
 - `--adult`: opt in to adult/NSFW platform checks
-- `--all`: enable all non-adult scan modules
+- `--all`: enable all non-adult scan modules, including local-part platform scans for email targets
 - `--threads`: maximum concurrent requests per scanning engine
 - `--timeout`: per-request timeout in seconds
 - `-o, --output`: save report to disk
@@ -103,5 +104,6 @@ Using `--breaches` sends the target email address to those third-party breach se
 ## Notes
 
 - Adult platform definitions are excluded by default.
+- Email platform scans reuse the email local-part only when it is a valid supported username.
 - Public sites change often; a `possible`, `timeout`, or `error` status usually means the endpoint blocked automation or changed its routing.
 - Use this tool responsibly and only against data you are authorized to investigate.

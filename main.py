@@ -84,6 +84,14 @@ class Gotcha:
             tasks["breaches"] = breach_checker.check_breaches(email)
         if options.social:
             tasks["social_accounts"] = email_hunter.hunt_social_accounts(email)
+        if options.general:
+            tasks["general_sites"] = email_hunter.hunt_general_sites(email)
+        if options.developer:
+            tasks["developer_platforms"] = email_hunter.hunt_developer_accounts(email)
+        if options.forums:
+            tasks["forums"] = email_hunter.hunt_forum_accounts(email)
+        if options.gaming:
+            tasks["gaming"] = email_hunter.hunt_gaming_accounts(email)
         if options.professional:
             tasks["professional_accounts"] = email_hunter.hunt_professional_accounts(email)
         if options.domain:
@@ -100,6 +108,10 @@ class Gotcha:
             "email": email,
             "breaches": [],
             "social_accounts": [],
+            "general_sites": [],
+            "developer_platforms": [],
+            "forums": [],
+            "gaming": [],
             "professional_accounts": [],
             "domain_info": {},
         }
@@ -162,6 +174,7 @@ def build_parser():
 Examples:
   %(prog)s -u john_doe --social --developer
   %(prog)s -e john@example.com --breaches --domain
+  %(prog)s -e john@example.com --all
   %(prog)s -u username -e email@domain.com --all
   %(prog)s -u username --social --adult
   %(prog)s -f targets.txt --all -o report.json --format json
@@ -173,16 +186,16 @@ Note: adult/NSFW platforms are only queried when --adult is provided.
     parser.add_argument("-e", "--email", help="Target email address")
     parser.add_argument("-f", "--file", help="File containing usernames/emails (one per line)")
 
-    parser.add_argument("--social", action="store_true", help="Search social media platforms")
-    parser.add_argument("--general", action="store_true", help="Search general websites")
-    parser.add_argument("--developer", action="store_true", help="Search developer platforms")
-    parser.add_argument("--forums", action="store_true", help="Search forums and communities")
-    parser.add_argument("--gaming", action="store_true", help="Search gaming platforms")
+    parser.add_argument("--social", action="store_true", help="Search social media platforms (email scans use the local-part)")
+    parser.add_argument("--general", action="store_true", help="Search general websites (email scans use the local-part)")
+    parser.add_argument("--developer", action="store_true", help="Search developer platforms (email scans use the local-part)")
+    parser.add_argument("--forums", action="store_true", help="Search forums and communities (email scans use the local-part)")
+    parser.add_argument("--gaming", action="store_true", help="Search gaming platforms (email scans use the local-part)")
     parser.add_argument("--breaches", action="store_true", help="Check for public breach exposure records")
     parser.add_argument("--professional", action="store_true", help="Search professional networks from email local-parts")
     parser.add_argument("--domain", action="store_true", help="Analyze email domain configuration")
     parser.add_argument("--adult", action="store_true", help="Opt-in to adult/NSFW platform checks (18+)")
-    parser.add_argument("--all", action="store_true", help="Enable all non-adult search modules")
+    parser.add_argument("--all", action="store_true", help="Enable all non-adult search modules for the selected targets")
 
     parser.add_argument("-o", "--output", help="Output file path")
     parser.add_argument("--format", choices=["json", "csv", "txt"], default="json", help="Output format")
@@ -218,6 +231,11 @@ def main():
             args.forums = True
             args.gaming = True
         if args.email or args.file:
+            args.social = True
+            args.general = True
+            args.developer = True
+            args.forums = True
+            args.gaming = True
             args.breaches = True
             args.professional = True
             args.domain = True
