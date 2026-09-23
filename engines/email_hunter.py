@@ -73,7 +73,7 @@ class EmailHunter:
         url = f"https://www.gravatar.com/avatar/{digest}?d=404"
         session = await self._get_session()
         try:
-            async with session.get(url, ssl=False) as response:
+            async with session.get(url) as response:
                 if response.status == 200:
                     return {
                         "platform": "Gravatar",
@@ -91,7 +91,7 @@ class EmailHunter:
         session = await self._get_session()
         for scheme in ("https", "http"):
             try:
-                async with session.get(f"{scheme}://{domain}", ssl=False) as response:
+                async with session.get(f"{scheme}://{domain}") as response:
                     if response.status < 500:
                         return True
             except Exception:

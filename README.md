@@ -97,6 +97,8 @@ export HIBP_API_KEY="your_api_key"
 python3 main.py -e user@example.com --breaches
 ```
 
+Using `--breaches` sends the target email address to those third-party breach services so they can perform the lookup. Only enable that option when you are authorized to share the target email with external providers.
+
 ## Notes
 
 - Adult platform definitions are excluded by default.

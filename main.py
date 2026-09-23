@@ -129,12 +129,12 @@ async def run_scan(args):
             if result:
                 results.append(result)
     else:
-        target_tasks = []
         if args.username:
-            target_tasks.append(gotcha.run_username_scan(args.username, args))
+            result = await gotcha.run_username_scan(args.username, args)
+            if result:
+                results.append(result)
         if args.email:
-            target_tasks.append(gotcha.run_email_scan(args.email, args))
-        for result in await asyncio.gather(*target_tasks):
+            result = await gotcha.run_email_scan(args.email, args)
             if result:
                 results.append(result)
 
@@ -211,7 +211,10 @@ def main():
         args.professional = True
         args.domain = True
 
-    if not any([args.social, args.general, args.developer, args.forums, args.gaming, args.breaches, args.professional, args.domain, args.adult]):
+    non_adult_scan_selected = any([args.social, args.general, args.developer, args.forums, args.gaming, args.breaches, args.professional, args.domain])
+    if args.adult and not args.username and not non_adult_scan_selected:
+        parser.error("--adult by itself requires a username target or another compatible scan module")
+    if not non_adult_scan_selected and not (args.adult and args.username):
         parser.error("At least one scan option must be specified (or use --all)")
 
     if not args.quiet:

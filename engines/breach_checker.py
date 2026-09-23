@@ -46,7 +46,7 @@ class BreachChecker:
         }
         url = f"https://haveibeenpwned.com/api/v3/breachedaccount/{email}"
         try:
-            async with session.get(url, headers=headers, params={"truncateResponse": "false"}, ssl=False) as response:
+            async with session.get(url, headers=headers, params={"truncateResponse": "false"}) as response:
                 if response.status == 404:
                     return [{"source": "Have I Been Pwned", "status": "not_found", "details": "No breaches reported by HIBP."}]
                 if response.status == 200:
@@ -69,7 +69,7 @@ class BreachChecker:
     async def _check_xposedornot(self, session, email):
         url = f"https://api.xposedornot.com/v1/check-email/{email}"
         try:
-            async with session.get(url, ssl=False) as response:
+            async with session.get(url) as response:
                 if response.status == 404:
                     return [{"source": "XposedOrNot", "status": "not_found", "details": "No breach records were reported."}]
                 if response.status != 200:
