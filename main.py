@@ -4,7 +4,6 @@
 import argparse
 import asyncio
 import sys
-import warnings
 from pathlib import Path
 
 from colorama import init as colorama_init
@@ -19,11 +18,6 @@ from engines.username_hunter import UsernameHunter
 from utils.reporter import Reporter
 from utils.validator import Validator
 
-warnings.filterwarnings("ignore", category=ResourceWarning, message="unclosed.*")
-warnings.filterwarnings("ignore", category=ResourceWarning, message=".*client_session.*")
-warnings.filterwarnings("ignore", category=ResourceWarning, message=".*connector.*")
-
-
 class Gotcha:
     def __init__(self, config: Config, quiet: bool = False):
         self.config = config
@@ -37,21 +31,26 @@ class Gotcha:
             return None
 
         self.logger.info("Starting username scan for: %s", username)
-        username_hunter = UsernameHunter(self.config, self.logger)
-        social_hunter = SocialMediaHunter(self.config, self.logger)
-
+        username_hunter = None
+        social_hunter = None
         tasks = {}
         if options.social:
+            social_hunter = social_hunter or SocialMediaHunter(self.config, self.logger)
             tasks["social_media"] = social_hunter.hunt_username(username, include_adult=False)
         if options.general:
+            username_hunter = username_hunter or UsernameHunter(self.config, self.logger)
             tasks["general_sites"] = username_hunter.hunt_general_sites(username, include_adult=False)
         if options.developer:
+            username_hunter = username_hunter or UsernameHunter(self.config, self.logger)
             tasks["developer_platforms"] = username_hunter.hunt_developer_platforms(username)
         if options.forums:
+            username_hunter = username_hunter or UsernameHunter(self.config, self.logger)
             tasks["forums"] = username_hunter.hunt_forums(username)
         if options.gaming:
+            username_hunter = username_hunter or UsernameHunter(self.config, self.logger)
             tasks["gaming"] = username_hunter.hunt_gaming_platforms(username)
         if options.adult:
+            username_hunter = username_hunter or UsernameHunter(self.config, self.logger)
             tasks["adult_platforms"] = username_hunter.hunt_adult_platforms(username)
 
         gathered = await asyncio.gather(*tasks.values()) if tasks else []
@@ -84,7 +83,7 @@ class Gotcha:
         if options.breaches:
             tasks["breaches"] = breach_checker.check_breaches(email)
         if options.social:
-            tasks["social_accounts"] = email_hunter.hunt_social_accounts(email, include_adult=options.adult)
+            tasks["social_accounts"] = email_hunter.hunt_social_accounts(email)
         if options.professional:
             tasks["professional_accounts"] = email_hunter.hunt_professional_accounts(email)
         if options.domain:
@@ -212,9 +211,9 @@ def main():
         args.domain = True
 
     non_adult_scan_selected = any([args.social, args.general, args.developer, args.forums, args.gaming, args.breaches, args.professional, args.domain])
-    if args.adult and not args.username and not args.social:
-        parser.error("--adult requires a username target or --social so adult platform checks have an effect")
-    if not non_adult_scan_selected and not (args.adult and args.username):
+    if args.adult and not args.username and not args.file:
+        parser.error("--adult requires a username target or file input because adult platform checks only apply to username scans")
+    if not non_adult_scan_selected and not (args.adult and (args.username or args.file)):
         parser.error("At least one scan option must be specified (or use --all)")
 
     if not args.quiet:

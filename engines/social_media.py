@@ -11,8 +11,5 @@ class SocialMediaHunter(UsernameHunter):
     async def hunt_username(self, username, include_adult=False):
         platforms = self.config.get_platforms("social", include_adult=False)
         results = await self._scan_platforms(username, platforms)
-        if include_adult:
-            adult_results = await self._scan_platforms(username, self.config.get_platforms("adult_social"), positive_only=False)
-            results.extend(adult_results)
         unique = {(item["platform"], item["url"]): item for item in results}
-        return sorted(unique.values(), key=lambda item: (item["adult"], item["platform"]))
+        return sorted(unique.values(), key=lambda item: item["platform"])

@@ -17,12 +17,12 @@ class EmailHunter:
         self.logger = logger
         self._session = None
 
-    async def hunt_social_accounts(self, email, include_adult=False):
+    async def hunt_social_accounts(self, email):
         local_part = email.split("@", 1)[0]
         results = []
         if Validator.is_valid_username(local_part):
             hunter = SocialMediaHunter(self.config, self.logger)
-            results.extend(await hunter.hunt_username(local_part, include_adult=include_adult))
+            results.extend(await hunter.hunt_username(local_part, include_adult=False))
         gravatar = await self._check_gravatar(email)
         if gravatar:
             results.append(gravatar)
