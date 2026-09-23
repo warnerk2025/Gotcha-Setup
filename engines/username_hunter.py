@@ -57,7 +57,7 @@ class UsernameHunter:
         url = platform.url.format(username=username)
         async with self.semaphore:
             try:
-                async with session.get(url, allow_redirects=True) as response:
+                async with session.get(url, allow_redirects=False) as response:
                     text = await response.text(errors="ignore")
                     status = self._classify_response(response.status, text)
                     if status == "not_found":
@@ -66,7 +66,7 @@ class UsernameHunter:
                         "platform": platform.name,
                         "category": platform.category,
                         "adult": platform.adult,
-                        "url": str(response.url),
+                        "url": response.headers.get("Location", str(response.url)),
                         "status": status,
                         "http_status": response.status,
                     }

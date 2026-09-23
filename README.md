@@ -4,7 +4,7 @@ Gotcha-Setup is a ready-to-run Python OSINT utility for username and email recon
 
 ## Features
 
-- Username reconnaissance across 100+ platform definitions
+- Broad username reconnaissance across social, developer, gaming, forum, general, and adult platform definitions
 - Email reconnaissance with domain analysis and public breach lookups
 - Async concurrent scanning with configurable `--threads` and `--timeout`
 - Batch processing from a newline-delimited input file

@@ -206,14 +206,16 @@ def main():
         parser.error("--timeout must be greater than 0")
 
     if args.all:
-        args.social = True
-        args.general = True
-        args.developer = True
-        args.forums = True
-        args.gaming = True
-        args.breaches = True
-        args.professional = True
-        args.domain = True
+        if args.username or args.file:
+            args.social = True
+            args.general = True
+            args.developer = True
+            args.forums = True
+            args.gaming = True
+        if args.email or args.file:
+            args.breaches = True
+            args.professional = True
+            args.domain = True
 
     non_adult_scan_selected = any([args.social, args.general, args.developer, args.forums, args.gaming, args.breaches, args.professional, args.domain])
     if args.adult and not args.username and not args.file:
