@@ -18,22 +18,26 @@ class EmailHunter:
         self._session = None
 
     async def hunt_social_accounts(self, email):
-        local_part = email.split("@", 1)[0]
-        results = []
-        if Validator.is_valid_username(local_part):
-            hunter = SocialMediaHunter(self.config, self.logger)
-            results.extend(await hunter.hunt_username(local_part))
+        results = await self._hunt_social_local_part(email)
         gravatar = await self._check_gravatar(email)
         if gravatar:
             results.append(gravatar)
         return results
 
+    async def hunt_general_sites(self, email):
+        return await self._hunt_username_group(email, "general")
+
+    async def hunt_developer_accounts(self, email):
+        return await self._hunt_username_group(email, "developer")
+
+    async def hunt_forum_accounts(self, email):
+        return await self._hunt_username_group(email, "forums")
+
+    async def hunt_gaming_accounts(self, email):
+        return await self._hunt_username_group(email, "gaming")
+
     async def hunt_professional_accounts(self, email):
-        local_part = email.split("@", 1)[0]
-        if not Validator.is_valid_username(local_part):
-            return []
-        hunter = UsernameHunter(self.config, self.logger)
-        return await hunter.hunt_professional_platforms(local_part)
+        return await self._hunt_username_group(email, "professional")
 
     async def analyze_domain(self, email):
         domain = email.split("@", 1)[1].lower()
@@ -86,6 +90,34 @@ class EmailHunter:
         except Exception:
             return None
         return None
+
+    async def _hunt_social_local_part(self, email):
+        local_part = self._get_local_part_username(email)
+        if not local_part:
+            return []
+        hunter = SocialMediaHunter(self.config, self.logger)
+        return await hunter.hunt_username(local_part)
+
+    async def _hunt_username_group(self, email, group):
+        local_part = self._get_local_part_username(email)
+        if not local_part:
+            return []
+        hunter = UsernameHunter(self.config, self.logger)
+        method_map = {
+            "general": hunter.hunt_general_sites,
+            "developer": hunter.hunt_developer_platforms,
+            "forums": hunter.hunt_forums,
+            "gaming": hunter.hunt_gaming_platforms,
+            "professional": hunter.hunt_professional_platforms,
+        }
+        return await method_map[group](local_part)
+
+    @staticmethod
+    def _get_local_part_username(email):
+        local_part = email.split("@", 1)[0]
+        if not Validator.is_valid_username(local_part):
+            return None
+        return local_part
 
     async def _check_website(self, domain):
         session = await self._get_session()
