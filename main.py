@@ -36,7 +36,7 @@ class Gotcha:
         tasks = {}
         if options.social:
             social_hunter = social_hunter or SocialMediaHunter(self.config, self.logger)
-            tasks["social_media"] = social_hunter.hunt_username(username, include_adult=False)
+            tasks["social_media"] = social_hunter.hunt_username(username)
         if options.general:
             username_hunter = username_hunter or UsernameHunter(self.config, self.logger)
             tasks["general_sites"] = username_hunter.hunt_general_sites(username, include_adult=False)
@@ -213,6 +213,16 @@ def main():
     non_adult_scan_selected = any([args.social, args.general, args.developer, args.forums, args.gaming, args.breaches, args.professional, args.domain])
     if args.adult and not args.username and not args.file:
         parser.error("--adult requires a username target or file input because adult platform checks only apply to username scans")
+    if args.file and args.adult and not non_adult_scan_selected:
+        input_file = Path(args.file)
+        if input_file.exists():
+            targets = [
+                line.strip()
+                for line in input_file.read_text(encoding="utf-8").splitlines()
+                if line.strip() and not line.strip().startswith("#")
+            ]
+            if not any(Validator.is_valid_username(target) for target in targets):
+                parser.error("--adult by itself requires at least one valid username entry in --file")
     if not non_adult_scan_selected and not (args.adult and (args.username or args.file)):
         parser.error("At least one scan option must be specified (or use --all)")
 

@@ -4,7 +4,10 @@ import re
 
 
 class Validator:
-    EMAIL_RE = re.compile(r"^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$", re.IGNORECASE)
+    EMAIL_RE = re.compile(
+        r"^[A-Z0-9._%+-]+@(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+[A-Z]{2,63}$",
+        re.IGNORECASE,
+    )
     USERNAME_RE = re.compile(r"^[A-Za-z0-9](?:[A-Za-z0-9._-]{0,30}[A-Za-z0-9])?$|^[A-Za-z0-9]$")
 
     @classmethod

@@ -35,7 +35,8 @@ Gotcha-Setup/
 ## Installation
 
 ```bash
-cd /home/runner/work/Gotcha-Setup/Gotcha-Setup
+git clone https://github.com/warnerk2025/Gotcha-Setup.git
+cd Gotcha-Setup
 python3 -m pip install -r requirements.txt
 python3 main.py -h
 ```

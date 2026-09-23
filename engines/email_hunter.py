@@ -22,7 +22,7 @@ class EmailHunter:
         results = []
         if Validator.is_valid_username(local_part):
             hunter = SocialMediaHunter(self.config, self.logger)
-            results.extend(await hunter.hunt_username(local_part, include_adult=False))
+            results.extend(await hunter.hunt_username(local_part))
         gravatar = await self._check_gravatar(email)
         if gravatar:
             results.append(gravatar)
