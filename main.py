@@ -116,6 +116,9 @@ async def run_scan(args):
     async def process_target(target):
         if Validator.is_valid_email(target):
             return await gotcha.run_email_scan(target, args)
+        if not Validator.is_valid_username(target):
+            gotcha.logger.warning("Skipping invalid target from input: %s", target)
+            return None
         return await gotcha.run_username_scan(target, args)
 
     if args.file:
@@ -191,6 +194,8 @@ def main():
 
     if not any([args.username, args.email, args.file]):
         parser.error("At least one target must be specified: -u/--username, -e/--email, or -f/--file")
+    if args.file and not Path(args.file).exists():
+        parser.error(f"Input file not found: {args.file}")
     if args.username and not Validator.is_valid_username(args.username):
         parser.error("Username contains unsupported characters")
     if args.email and not Validator.is_valid_email(args.email):

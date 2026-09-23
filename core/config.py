@@ -86,6 +86,15 @@ DEVELOPER_PLATFORMS = [
     Platform("Codecademy", "https://www.codecademy.com/profiles/{username}", "developer_platforms"),
 ]
 
+PROFESSIONAL_PLATFORMS = [
+    Platform("LinkedIn", "https://www.linkedin.com/in/{username}", "professional_accounts"),
+    Platform("Wellfound", "https://wellfound.com/u/{username}", "professional_accounts"),
+    Platform("Xing", "https://www.xing.com/profile/{username}", "professional_accounts"),
+    Platform("Polywork", "https://www.polywork.com/{username}", "professional_accounts"),
+    Platform("ResearchGate", "https://www.researchgate.net/profile/{username}", "professional_accounts"),
+    Platform("ORCID", "https://orcid.org/{username}", "professional_accounts"),
+]
+
 FORUM_PLATFORMS = [
     Platform("Quora", "https://www.quora.com/profile/{username}", "forums"),
     Platform("Disqus", "https://disqus.com/by/{username}", "forums"),
@@ -149,6 +158,7 @@ ALL_PLATFORMS = {
     "social": SOCIAL_MEDIA_PLATFORMS,
     "general": GENERAL_PLATFORMS,
     "developer": DEVELOPER_PLATFORMS,
+    "professional": PROFESSIONAL_PLATFORMS,
     "forums": FORUM_PLATFORMS,
     "gaming": GAMING_PLATFORMS,
     "adult_social": ADULT_SOCIAL_PLATFORMS,

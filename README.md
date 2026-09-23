@@ -91,7 +91,7 @@ python3 main.py -f targets.txt --breaches --domain -o reports/results.txt --form
 
 ## Breach lookups
 
-The breach checker works out of the box against the public XposedOrNot email endpoint. If you set `HIBP_API_KEY`, it will also query Have I Been Pwned's authenticated API.
+The breach checker makes best-effort requests to the public XposedOrNot email endpoint. If you set `HIBP_API_KEY`, it will also query Have I Been Pwned's authenticated API. Results depend on those third-party services being reachable and continuing to support the same interfaces.
 
 ```bash
 export HIBP_API_KEY="your_api_key"

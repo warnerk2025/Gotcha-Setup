@@ -33,7 +33,7 @@ class EmailHunter:
         if not Validator.is_valid_username(local_part):
             return []
         hunter = UsernameHunter(self.config, self.logger)
-        return await hunter.hunt_developer_platforms(local_part)
+        return await hunter.hunt_professional_platforms(local_part)
 
     async def analyze_domain(self, email):
         domain = email.split("@", 1)[1].lower()

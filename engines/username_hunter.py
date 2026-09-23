@@ -37,6 +37,9 @@ class UsernameHunter:
     async def hunt_gaming_platforms(self, username):
         return await self._scan_platforms(username, self.config.get_platforms("gaming"))
 
+    async def hunt_professional_platforms(self, username):
+        return await self._scan_platforms(username, self.config.get_platforms("professional"))
+
     async def hunt_adult_platforms(self, username):
         return await self._scan_platforms(username, self.config.get_platforms("adult_social", "adult_general"), positive_only=False)
 
