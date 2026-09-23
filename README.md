@@ -79,7 +79,7 @@ python3 main.py -f targets.txt --breaches --domain -o reports/results.txt --form
 - `--forums`: forum/community checks
 - `--gaming`: gaming profile checks
 - `--breaches`: public breach lookup
-- `--professional`: professional/developer profile lookup based on email local-part
+- `--professional`: professional-network profile lookup based on the email local-part
 - `--domain`: MX/NS/TXT/SPF/DMARC analysis for email domains
 - `--adult`: opt in to adult/NSFW platform checks
 - `--all`: enable all non-adult scan modules

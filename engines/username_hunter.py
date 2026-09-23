@@ -1,6 +1,7 @@
 """Username reconnaissance engine."""
 
 import asyncio
+from urllib.parse import urljoin, urlparse
 
 import aiohttp
 
@@ -59,14 +60,15 @@ class UsernameHunter:
             try:
                 async with session.get(url, allow_redirects=False) as response:
                     text = await response.text(errors="ignore")
-                    status = self._classify_response(response.status, text)
+                    location = response.headers.get("Location")
+                    status = self._classify_response(response.status, text, url, location)
                     if status == "not_found":
                         return None
                     return {
                         "platform": platform.name,
                         "category": platform.category,
                         "adult": platform.adult,
-                        "url": response.headers.get("Location", str(response.url)),
+                        "url": urljoin(url, location) if location else str(response.url),
                         "status": status,
                         "http_status": response.status,
                     }
@@ -93,7 +95,7 @@ class UsernameHunter:
                 }
 
     @staticmethod
-    def _classify_response(http_status, body):
+    def _classify_response(http_status, body, requested_url, location=None):
         lowered = body.lower()
         if http_status == 404:
             return "not_found"
@@ -101,8 +103,16 @@ class UsernameHunter:
             if any(marker in lowered for marker in NEGATIVE_MARKERS):
                 return "not_found"
             return "found"
-        if http_status in {401, 403, 405, 429}:
-            return "possible"
         if http_status in {301, 302, 307, 308}:
+            if not location:
+                return "possible"
+            requested_path = urlparse(requested_url).path.rstrip("/")
+            target = urlparse(urljoin(requested_url, location))
+            target_path = target.path.rstrip("/")
+            username = requested_path.rsplit("/", 1)[-1].lower()
+            if target_path == requested_path or (username and username in target_path.lower()):
+                return "possible"
+            return "not_found"
+        if http_status in {401, 403, 405, 429}:
             return "possible"
         return "possible" if http_status and http_status < 500 else "error"

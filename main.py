@@ -126,8 +126,13 @@ async def run_scan(args):
         if not input_file.exists():
             raise FileNotFoundError(f"Input file not found: {args.file}")
         targets = [line.strip() for line in input_file.read_text(encoding="utf-8").splitlines() if line.strip() and not line.strip().startswith("#")]
-        for target in targets:
-            result = await process_target(target)
+        semaphore = asyncio.Semaphore(max(1, args.threads))
+
+        async def bounded_process(target):
+            async with semaphore:
+                return await process_target(target)
+
+        for result in await asyncio.gather(*(bounded_process(target) for target in targets)):
             if result:
                 results.append(result)
     else:
@@ -230,6 +235,8 @@ def main():
             ]
             if not any(Validator.is_valid_username(target) for target in targets):
                 parser.error("--adult by itself requires at least one valid username entry in --file")
+    if args.email and args.adult and not non_adult_scan_selected:
+        parser.error("--adult by itself cannot be combined with an explicit --email target")
     if not non_adult_scan_selected and not (args.adult and (args.username or args.file)):
         parser.error("At least one scan option must be specified (or use --all)")
 

@@ -40,7 +40,7 @@ class Reporter:
                     for entry in value:
                         if isinstance(entry, dict):
                             summary = ", ".join(f"{k}={v}" for k, v in entry.items() if v not in (None, [], {}))
-                            lines.append(f"    - {summary}")
+                            lines.append(f"    - {summary or 'none'}")
                         else:
                             lines.append(f"    - {entry}")
                 elif isinstance(value, dict):
@@ -64,6 +64,9 @@ class Reporter:
                 if section in {"username", "email", "target_type"}:
                     continue
                 if isinstance(value, list):
+                    if not value:
+                        rows.append({"target": target, "target_type": target_type, "section": section, "value": "none"})
+                        continue
                     for entry in value:
                         if isinstance(entry, dict):
                             row = {"target": target, "target_type": target_type, "section": section}
